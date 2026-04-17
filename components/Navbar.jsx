@@ -7,8 +7,7 @@ import { Menu, X } from "lucide-react";
 const navItems = [
   { label: "How It Works", href: "/#how-it-works" },
   { label: "Dashboard", href: "/dashboard" },
-  { label: "Chat Bot", href: "/#eggbot" },
-  { label: "Recipe Finder", href: "/#recipes" },
+
   { label: "Calculator", href: "/#calculator" },
   { label: "Comparison", href: "/#comparison" },
   { label: "Subscription Plans", href: "/#plans" },

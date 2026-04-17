@@ -6,6 +6,7 @@ import FreshnessCalculator from "../../components/Calculator";
 import ComparisonTable from "../../components/Comparison";
 import ReferralAndPlans from "../../components/Program";
 import ContactFooter from "../../components/Contact";
+// import RecipeGenerator from "../../components/Recipe";
 const Preview = () => {
   return (
     <div>
