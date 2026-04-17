@@ -305,7 +305,7 @@ export function getMockStorePrices(
       inStock: true,
       distance: 1.2,
       link: "https://www.aldi.us/products/fresh-produce-meat-and-seafood/eggs/",
-      source: "estimated",
+      source: "estimated" as const,
       note: "Goldhen brand — typically lowest price",
     },
     {
@@ -318,7 +318,7 @@ export function getMockStorePrices(
       inStock: true,
       distance: 0.8,
       link: `https://www.kroger.com/search?query=eggs`,
-      source: "api",
+      source: "api" as const,
     },
     {
       store: "Walmart",
@@ -330,7 +330,7 @@ export function getMockStorePrices(
       inStock: true,
       distance: 2.1,
       link: "https://www.walmart.com/browse/food/eggs/976759_976786_8910173",
-      source: "estimated",
+      source: "estimated" as const,
     },
     {
       store: "Target",
@@ -342,7 +342,7 @@ export function getMockStorePrices(
       inStock: true,
       distance: 3.4,
       link: "https://www.target.com/c/eggs-dairy/-/N-5xt1q",
-      source: "estimated",
+      source: "estimated" as const,
     },
     {
       store: "Costco",
@@ -354,7 +354,7 @@ export function getMockStorePrices(
       inStock: true,
       distance: 5.6,
       link: "https://www.costco.com/eggs.html",
-      source: "estimated",
+      source: "estimated" as const,
       note: "Membership required — best per-egg value",
     },
   ].sort((a, b) => (a.pricePerEgg || 0) - (b.pricePerEgg || 0));
