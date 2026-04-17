@@ -5,14 +5,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const navItems = [
-  { label: "How It Works", href: "#how-it-works" },
-  { label: "Chat Bot", href: "#eggbot" },
-  { label: "Recipe Finder", href: "#recipes" },
-  { label: "Calculator", href: "#calculator" },
-  { label: "Comparison", href: "#comparison" },
-  { label: "Subscription Plans", href: "#plans" },
-  { label: "Referal", href: "#sub" },
-  { label: "Contact", href: "#contact" },
+  { label: "How It Works", href: "/#how-it-works" },
+  { label: "Dashboard", href: "/dashboard" },
+  { label: "Chat Bot", href: "/#eggbot" },
+  { label: "Recipe Finder", href: "/#recipes" },
+  { label: "Calculator", href: "/#calculator" },
+  { label: "Comparison", href: "/#comparison" },
+  { label: "Subscription Plans", href: "/#plans" },
+  { label: "Referal", href: "/#sub" },
+  { label: "Contact", href: "/#contact" },
 ];
 
 export function Navbar() {
