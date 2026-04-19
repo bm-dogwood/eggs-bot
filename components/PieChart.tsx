@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   Chart as ChartJS,
   LineElement,
+  LineController,
   PointElement,
   LinearScale,
   CategoryScale,
@@ -26,7 +27,8 @@ ChartJS.register(
   LinearScale,
   CategoryScale,
   Filler,
-  Tooltip
+  Tooltip,
+  LineController
 );
 
 const RANGES = [
