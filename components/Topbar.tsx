@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
+import { EggIcon, RefreshCw } from "lucide-react";
 
 const PAGE_TITLES: Record<string, string> = {
   overview: "Market Overview",
@@ -42,12 +42,13 @@ export default function Topbar({
           fontWeight: 600,
           color: "#fff",
           letterSpacing: "-0.3px",
-          paddingLeft: 10,
+          paddingLeft: 1,
           borderLeft: "2px solid #111827",
           lineHeight: 1,
         }}
       >
-        {PAGE_TITLES[activePage] ?? activePage}
+        {" "}
+        <EggIcon />
       </div>
 
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
