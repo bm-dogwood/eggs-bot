@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { getNationalStats } from "@/lib/api";
+import Dashboard from "./dashboard/page";
 
 export const metadata: Metadata = buildMetadata({
   title: "EGGS.BOT — Find the Cheapest Eggs Near You | Real-Time Price Tracker",
@@ -37,7 +38,15 @@ const jsonLd = {
     "National average egg price tracking",
     "Organic and cage-free egg filters",
   ],
+  images: [
+    {
+      url: "https://images.pexels.com/photos/30805256/pexels-photo-30805256.jpeg",
+      width: 1200,
+      height: 630,
+    },
+  ],
+  logo: "https://images.pexels.com/photos/30805256/pexels-photo-30805256.jpeg",
 };
 export default function Home() {
-  return <Preview />;
+  return <Dashboard />;
 }

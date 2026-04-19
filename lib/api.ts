@@ -388,3 +388,319 @@ export async function getNationalStats() {
     history: prices,
   };
 }
+
+// import type {
+//   StorePrice,
+//   EggType,
+//   KrogerProduct,
+//   KrogerLocation,
+// } from "./types";
+// import { PRICE_HISTORY } from "./constants";
+
+// // ─── BLS Data ─────────────────────────────────────────────────────────────────
+// // Fetches from BLS public API (no key required for basic usage)
+// // Series: APU0000708111 = Grade A large eggs, per dozen
+// export async function fetchBLSData() {
+//   try {
+//     const res = await fetch(
+//       "https://api.bls.gov/publicAPI/v2/timeseries/data/APU0000708111?latest=true",
+//       { next: { revalidate: 86400 } } // cache 24h
+//     );
+//     if (!res.ok) throw new Error("BLS API failed");
+//     const json = await res.json();
+//     const series = json?.Results?.series?.[0]?.data;
+//     if (!series?.length) throw new Error("No BLS data");
+//     return {
+//       current: parseFloat(series[0].value),
+//       fetched: true,
+//     };
+//   } catch {
+//     // Fallback to static data
+//     const last = PRICE_HISTORY[PRICE_HISTORY.length - 1];
+//     return { current: last.price, fetched: false };
+//   }
+// }
+
+// // ─── Kroger OAuth2 ───────────────────────────────────────────────────────────
+// // Docs: https://developer.kroger.com/api-products/apis/products-api-public
+// // 1. Register at developer.kroger.com
+// // 2. Set KROGER_CLIENT_ID and KROGER_CLIENT_SECRET in .env.local
+// // Token endpoint: https://api.kroger.com/v1/connect/oauth2/token
+
+// let krogerToken: string | null = null;
+// let krogerTokenExpiry = 0;
+
+// async function getKrogerToken(): Promise<string | null> {
+//   const clientId = process.env.KROGER_CLIENT_ID;
+//   const clientSecret = process.env.KROGER_CLIENT_SECRET;
+
+//   if (!clientId || !clientSecret) {
+//     console.warn("[Kroger] Missing credentials — using mock data");
+//     return null;
+//   }
+
+//   if (krogerToken && Date.now() < krogerTokenExpiry) {
+//     return krogerToken;
+//   }
+
+//   try {
+//     const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString(
+//       "base64"
+//     );
+//     const res = await fetch("https://api.kroger.com/v1/connect/oauth2/token", {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Basic ${credentials}`,
+//         "Content-Type": "application/x-www-form-urlencoded",
+//       },
+//       body: "grant_type=client_credentials&scope=product.compact",
+//     });
+
+//     if (!res.ok) throw new Error(`Kroger auth failed: ${res.status}`);
+//     const data = await res.json();
+//     krogerToken = data.access_token;
+//     krogerTokenExpiry = Date.now() + data.expires_in * 1000 - 60000; // 1 min buffer
+//     return krogerToken;
+//   } catch (err) {
+//     console.error("[Kroger] Auth error:", err);
+//     return null;
+//   }
+// }
+
+// // ─── Kroger Location Search ──────────────────────────────────────────────────
+// export async function findKrogerLocation(
+//   zip: string
+// ): Promise<KrogerLocation | null> {
+//   const token = await getKrogerToken();
+//   if (!token) return null;
+
+//   try {
+//     const res = await fetch(
+//       `https://api.kroger.com/v1/locations?filter.zipCode.near=${zip}&filter.radiusInMiles=10&filter.limit=1`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: "application/json",
+//         },
+//         next: { revalidate: 3600 },
+//       }
+//     );
+
+//     if (!res.ok) return null;
+//     const data = await res.json();
+//     return data?.data?.[0] ?? null;
+//   } catch {
+//     return null;
+//   }
+// }
+
+// // ─── Kroger Product Search ────────────────────────────────────────────────────
+// // Searches for eggs at a specific Kroger location
+// export async function fetchKrogerEggPrices(
+//   locationId: string,
+//   eggType: EggType
+// ): Promise<StorePrice[]> {
+//   const token = await getKrogerToken();
+//   if (!token) return [];
+
+//   // Map egg types to search terms
+//   const searchTerms: Record<EggType, string> = {
+//     all: "large eggs",
+//     conventional: "large white eggs conventional",
+//     "cage-free": "cage free large eggs",
+//     "free-range": "free range large eggs",
+//     organic: "organic large eggs",
+//     "pasture-raised": "pasture raised large eggs",
+//   };
+
+//   const term = encodeURIComponent(searchTerms[eggType]);
+
+//   try {
+//     const res = await fetch(
+//       `https://api.kroger.com/v1/products?filter.term=${term}&filter.locationId=${locationId}&filter.limit=8`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           Accept: "application/json",
+//         },
+//         next: { revalidate: 900 }, // cache 15 min
+//       }
+//     );
+
+//     if (!res.ok) return [];
+//     const data = await res.json();
+//     const products: KrogerProduct[] = data?.data ?? [];
+
+//     return products
+//       .filter((p) => p.items?.length && p.items[0]?.price?.regular)
+//       .map((p) => {
+//         const item = p.items[0];
+//         const price = item.price.promo ?? item.price.regular;
+//         const sizeMatch = item.size?.match(/(\d+)/);
+//         const count = sizeMatch ? parseInt(sizeMatch[1]) : 12;
+
+//         return {
+//           store: "Kroger",
+//           logo: "🟥",
+//           price,
+//           pricePerEgg: price / count,
+//           size: item.size ?? "12-count",
+//           eggType,
+//           source: "api" as const,
+//           link: `https://www.kroger.com/p/${p.productId}`,
+//           note: p.description,
+//           inStock: true,
+//         };
+//       })
+//       .slice(0, 3);
+//   } catch {
+//     return [];
+//   }
+// }
+
+// // ─── Mock Store Prices (fallback when APIs unavailable) ───────────────────────
+// // In production, replace Walmart/Target/Aldi/Costco with scraped prices
+// export function getMockStorePrices(
+//   zip: string,
+//   eggType: EggType
+// ): StorePrice[] {
+//   // Simulate realistic regional price variation based on ZIP prefix
+//   const zipNum = parseInt(zip.slice(0, 2)) || 50;
+//   const regionalMultiplier = 0.9 + (zipNum % 20) * 0.01; // ±10% regional variance
+
+//   const basePrice = (base: number) =>
+//     Math.round(base * regionalMultiplier * 100) / 100;
+
+//   const typeMultipliers: Record<EggType, number> = {
+//     all: 1.0,
+//     conventional: 1.0,
+//     "cage-free": 1.38,
+//     "free-range": 1.55,
+//     organic: 1.82,
+//     "pasture-raised": 2.2,
+//   };
+//   const mult = typeMultipliers[eggType];
+
+//   // Determine the actual egg type for display (if "all", default to conventional)
+//   // ✅ Cast as EggType to ensure correct type
+//   const displayEggType: EggType = eggType === "all" ? "conventional" : eggType;
+
+//   const stores: StorePrice[] = [
+//     {
+//       store: "Aldi",
+//       logo: "🟦",
+//       price: basePrice(2.85 * mult),
+//       pricePerEgg: basePrice(2.85 * mult) / 12,
+//       size: eggType === "all" ? "12-count" : `12-count ${eggType}`,
+//       eggType: displayEggType, // ✅ Now typed as EggType
+//       source: "estimated" as const,
+//       distance: 0.8 + Math.random() * 1.5,
+//       link: "https://www.aldi.us/products/fresh-produce/dairy-eggs/eggs/",
+//       note: "Store brand",
+//       inStock: true,
+//     },
+//     {
+//       store: "Walmart",
+//       logo: "🔵",
+//       price: basePrice(3.1 * mult),
+//       pricePerEgg: basePrice(3.1 * mult) / 12,
+//       size: "12-count",
+//       eggType: displayEggType, // ✅ Now typed as EggType
+//       source: "estimated" as const,
+//       distance: 1.2 + Math.random() * 1.5,
+//       link: `https://www.walmart.com/search?q=${eggType}+eggs`,
+//       note: "Great Value",
+//       inStock: true,
+//     },
+//     {
+//       store: "Kroger",
+//       logo: "🟥",
+//       price: basePrice(3.45 * mult),
+//       pricePerEgg: basePrice(3.45 * mult) / 12,
+//       size: "12-count",
+//       eggType: displayEggType, // ✅ Now typed as EggType
+//       source: "estimated" as const,
+//       distance: 1.5 + Math.random() * 2,
+//       link: `https://www.kroger.com/search?query=${eggType}+eggs`,
+//       note: "Requires Kroger API for live price",
+//       inStock: true,
+//     },
+//     {
+//       store: "Target",
+//       logo: "🎯",
+//       price: basePrice(3.89 * mult),
+//       pricePerEgg: basePrice(3.89 * mult) / 12,
+//       size: "12-count",
+//       eggType: displayEggType, // ✅ Now typed as EggType
+//       source: "estimated" as const,
+//       distance: 2.0 + Math.random() * 2,
+//       link: `https://www.target.com/s?searchTerm=${eggType}+eggs`,
+//       note: "Market Pantry brand",
+//       inStock: true,
+//     },
+//     {
+//       store: "Costco",
+//       logo: "🟩",
+//       price: basePrice(7.99),
+//       pricePerEgg: basePrice(7.99) / 36,
+//       size: "36-count (Kirkland)",
+//       eggType: "conventional" as EggType, // ✅ Explicitly cast
+//       source: "estimated" as const,
+//       distance: 3.1 + Math.random() * 3,
+//       link: "https://www.costco.com/eggs.html",
+//       note: "Best per-egg value (~$0.22/egg)",
+//       inStock: true,
+//     },
+//   ].sort((a, b) => a.price - b.price);
+
+//   return stores;
+// }
+
+// // ─── Full store price fetcher ─────────────────────────────────────────────────
+// // Tries Kroger API first, falls back to mock for all stores
+// export async function getStorePrices(
+//   zip: string,
+//   eggType: EggType
+// ): Promise<StorePrice[]> {
+//   const mockPrices = getMockStorePrices(zip, eggType);
+
+//   // Try to enrich with live Kroger data
+//   try {
+//     const location = await findKrogerLocation(zip);
+//     if (location) {
+//       const krogerLive = await fetchKrogerEggPrices(
+//         location.locationId,
+//         eggType
+//       );
+//       if (krogerLive.length > 0) {
+//         // Replace mock Kroger with real data
+//         const withLive = mockPrices.filter((s) => s.store !== "Kroger");
+//         withLive.push({
+//           ...krogerLive[0],
+//           distance: mockPrices.find((s) => s.store === "Kroger")?.distance,
+//         });
+//         return withLive.sort((a, b) => a.price - b.price);
+//       }
+//     }
+//   } catch {
+//     // Silently fall through to mock
+//   }
+
+//   return mockPrices;
+// }
+
+// // ─── Scraping notes (for production implementation) ───────────────────────────
+// // Walmart: GET https://www.walmart.com/search?q=eggs&affinityOverride=default
+// //   → Parse __NEXT_DATA__ JSON, look for items[].priceInfo.currentPrice.price
+// //   → Use Playwright with stealth plugin to avoid bot detection
+// //
+// // Target: GET https://redsky.target.com/redsky_aggregations/v1/web/pdp_client_v1
+// //   → Use internal API discovered via devtools (unofficial, may break)
+// //   → Alternatively scrape search results page
+// //
+// // Aldi: No API, scrape https://www.aldi.us/en/offers/
+// //   → Use Playwright, handle JS-rendered content
+// //   → Prices update weekly (Aldi's "ALDI Finds" model)
+// //
+// // All scraped data should be cached in Redis/KV for 2-4 hours to avoid
+// // rate limiting and reduce latency. Use a rotating proxy pool for production.
