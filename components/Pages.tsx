@@ -76,9 +76,8 @@ export default function HomePage() {
             <div className="logo-section">
               <span className="logo-emoji">🥚</span>
               <h1 className="logo-text">
-                eggs<span className="logo-dot">.</span>bot
+                Eggs<span className="logo-dot">.</span>bot
               </h1>
-              <span className="logo-badge">BETA</span>
             </div>
 
             <button
@@ -132,8 +131,7 @@ export default function HomePage() {
         <footer className="app-footer">
           <div className="footer-content">
             <div className="footer-left">
-              <span className="footer-emoji">🥚</span>
-              <span>eggs.bot — Real-time egg price intelligence</span>
+              <span>Eggs.bot — Real-time egg price intelligence</span>
             </div>
             <div className="footer-right">
               <span className="footer-stat">

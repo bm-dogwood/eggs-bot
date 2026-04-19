@@ -62,7 +62,7 @@ export function AlertBanner() {
           margin-bottom: 6px;
           font-size: 15px;
           font-weight: 700;
-          color: #000;
+          color: #f1f5f9;
         }
 
         .alert-badge {

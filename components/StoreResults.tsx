@@ -129,7 +129,7 @@ export default function StoreResults() {
                 gap: 6,
               }}
             >
-              🏆 Best near {searchedZip}: <strong>{cheapest.store}</strong> —{" "}
+              Best near {searchedZip}: <strong>{cheapest.store}</strong> —{" "}
               {formatPrice(cheapest.price)}/dz (
               {formatPricePerEgg(cheapest.pricePerEgg)}/egg)
             </div>

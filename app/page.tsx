@@ -1,5 +1,11 @@
-import Dashboard from "@/app/dashboard/page";
+import Pages from "@/components/Pages";
 
 export default function Home() {
-  return <Dashboard />;
+  return <Pages />;
 }
+
+// import Dashboard from "./dashboard/page";
+
+// export default function Home() {
+//   return <Dashboard />;
+// }
