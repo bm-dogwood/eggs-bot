@@ -38,8 +38,8 @@ async function fetchWalmart(): Promise<{
       };
     }
 
-    // Try alternate pattern
-    const altMatch = html.match(/Great Value.*?(\$[\d.]+)/s);
+    // Try alternate pattern - removed the /s flag
+    const altMatch = html.match(/Great Value.*?(\$[\d.]+)/);
     if (altMatch) {
       const p = parseFloat(altMatch[1].replace("$", ""));
       if (!isNaN(p) && p > 0.5 && p < 20) {
