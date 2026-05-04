@@ -1,106 +1,68 @@
+// components/site/Nav.tsx
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { TICKER } from "@/lib/eggs-data";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-const navItems = [
-  { label: "How It Works", href: "/#how-it-works" },
-  { label: "Dashboard", href: "/dashboard" },
-
-  { label: "Calculator", href: "/#calculator" },
-  { label: "Comparison", href: "/#comparison" },
-  { label: "Subscription Plans", href: "/#plans" },
-  { label: "Referal", href: "/#sub" },
-  { label: "Contact", href: "/#contact" },
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/finder", label: "Finder" },
+  { href: "/dashboard", label: "Yolk Index" },
+  { href: "/types", label: "Types" },
+  { href: "/alerts", label: "Alerts" },
+  { href: "/about", label: "About" },
 ];
 
-export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+export function Nav() {
+  const pathname = usePathname();
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/80 backdrop-blur-md shadow-lg" : "bg-transparent"
-      }`}
-    >
-      <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="#" className="flex items-center gap-2.5">
-          <span className="text-lg font-bold text-gray-900 tracking-tight">
-            Eggs
-            <span className="bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent">
-              .Bot
-            </span>
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/70 backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        <Link href="/" className="group flex items-center gap-2">
+          <span className="relative inline-flex h-8 w-7 items-center justify-center rounded-[60%/70%] bg-yolk-grad shadow-yolk transition-transform group-hover:rotate-12">
+            <span className="absolute inset-1 rounded-[60%/70%] bg-yolk-grad opacity-90" />
           </span>
-        </a>
-
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-1">
-          {navItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100"
-            >
-              {item.label}
-            </a>
+          <span className="font-display text-2xl font-black tracking-tight">
+            EGGS<span className="text-yolk">.</span>BOT
+          </span>
+        </Link>
+        <nav className="hidden items-center gap-1 md:flex">
+          {links.map((l) => {
+            const active = pathname === l.href;
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`rounded-full px-4 py-1.5 text-sm transition-all ${
+                  active
+                    ? "bg-yolk text-primary-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                {l.label}
+              </Link>
+            );
+          })}
+        </nav>
+        <Link
+          href="/finder"
+          className="rounded-full bg-yolk px-4 py-2 text-sm font-semibold text-primary-foreground shadow-yolk transition-transform hover:scale-105"
+        >
+          Find cheap eggs
+        </Link>
+      </div>
+      <div className="overflow-hidden border-b border-border/60 bg-yolk py-3 text-primary-foreground">
+        <div className="flex w-max animate-ticker gap-12 whitespace-nowrap font-mono text-sm">
+          {[...TICKER, ...TICKER].map((t, i) => (
+            <span key={i} className="flex items-center gap-3">
+              <span className="inline-block h-2 w-2 rounded-full bg-primary-foreground" />
+              {t}
+            </span>
           ))}
         </div>
-
-        <div className="hidden md:flex items-center gap-3">
-          <button className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors rounded-md hover:bg-gray-100">
-            Sign In
-          </button>
-          <button className="px-4 py-1.5 text-sm text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 rounded-md shadow-md hover:shadow-lg transition-shadow">
-            Talk to Bot
-          </button>
-        </div>
-
-        {/* Mobile Toggle */}
-        <button
-          onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-gray-900"
-        >
-          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
       </div>
-
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white/80 backdrop-blur-md border-t border-gray-200"
-          >
-            <div className="container mx-auto px-6 py-4 flex flex-col gap-2">
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
-              <button className="px-4 py-2 text-sm text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 rounded-md shadow-md hover:shadow-lg transition-shadow mt-2">
-                Talk to Bot
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.nav>
+    </header>
   );
 }
