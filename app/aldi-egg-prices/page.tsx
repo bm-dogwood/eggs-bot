@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 
 import Link from "next/link";
-import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = buildMetadata({
   title: "Aldi Egg Prices 2025 — Cheapest Eggs? Goldhen Review | EGGS.BOT",
@@ -95,7 +94,6 @@ export default function AldiEggPrices() {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--carton)" }}>
-      <Navbar />
       <main className="max-w-4xl mx-auto px-4 py-12 space-y-10">
         <div>
           <h1

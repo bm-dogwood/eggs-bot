@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { getNationalStats } from "@/lib/api";
 
 import Link from "next/link";
-import { Navbar } from "@/components/Navbar";
 
 export const metadata: Metadata = buildMetadata({
   title:
@@ -30,14 +28,6 @@ const jsonLd = {
 };
 
 export default async function EggPricesToday() {
-  const stats = await getNationalStats();
-  const pct = ((stats.current - stats.previous) / stats.previous) * 100;
-  const today = new Date().toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-
   const storeEstimates = [
     { store: "Aldi", price: 2.49, note: "Goldhen large dozen" },
     { store: "Kroger", price: 2.79, note: "Simple Truth large dozen" },
@@ -54,14 +44,13 @@ export default async function EggPricesToday() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="min-h-screen" style={{ background: "var(--carton)" }}>
-        <Navbar />
         <main className="max-w-4xl mx-auto px-4 py-12 space-y-10">
           <div>
             <p
               className="text-xs uppercase tracking-widest mb-2"
               style={{ color: "var(--yolk)", fontFamily: "var(--font-mono)" }}
             >
-              Updated {today}
+              Updated
             </p>
             <h1
               className="font-display text-5xl md:text-6xl mb-3"
@@ -86,24 +75,7 @@ export default async function EggPricesToday() {
             >
               National Average · Dozen Large Eggs
             </p>
-            <div
-              className="font-display text-7xl md:text-8xl mb-3"
-              style={{ color: "var(--yolk)", letterSpacing: "0.04em" }}
-            >
-              ${stats.current.toFixed(2)}
-            </div>
-            <div
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm"
-              style={{
-                background:
-                  pct > 0 ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)",
-                color: pct > 0 ? "#ef4444" : "#22c55e",
-                fontFamily: "var(--font-mono)",
-              }}
-            >
-              {pct > 0 ? "📈" : "📉"} {pct > 0 ? "+" : ""}
-              {pct.toFixed(1)}% vs last month
-            </div>
+
             <p
               className="mt-4 text-xs"
               style={{
@@ -226,10 +198,7 @@ export default async function EggPricesToday() {
             <p>
               Today's egg prices are shaped primarily by three forces: HPAI
               (bird flu) outbreaks, feed costs, and energy prices. The national
-              average of{" "}
-              <strong style={{ color: "var(--yolk)" }}>
-                ${stats.current.toFixed(2)}/dozen
-              </strong>{" "}
+              average of <strong style={{ color: "var(--yolk)" }}></strong>{" "}
               reflects these ongoing pressures, which have kept prices elevated
               since the 2022 outbreak cycle began.
             </p>

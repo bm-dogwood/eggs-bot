@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { Navbar } from "../../components/Navbar";
+
 import Link from "next/link";
 
 export const metadata: Metadata = buildMetadata({
@@ -58,7 +58,6 @@ export default function CheapestEggsNearMe() {
 
   return (
     <div className="min-h-screen" style={{ background: "var(--carton)" }}>
-      <Navbar />
       <main className="max-w-4xl mx-auto px-4 py-12 space-y-10">
         <div>
           <h1
